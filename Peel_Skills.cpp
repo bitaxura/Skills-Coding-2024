@@ -1,6 +1,10 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+#define RESET "\033[0m"
+#define CYAN "\033[36m"
+#define BLUE "\033[34m"
+
 class PEEL {
 private:
     int id, purchase_date, model_year, age;
@@ -162,7 +166,7 @@ int main() {
 
     char choice;
     while (true) {
-        cout<<"Welcome to the Peel Car Dealership!"<<endl;
+        cout<<CYAN<<"\nWelcome to the Peel Car Dealership!"<<RESET<<endl;
         cout<<"Your Choices are: "<<endl;
         cout<<"Add Vehicles to the File(I): "<<endl;
         cout<<"Output Every Vehicle in the File(O): "<<endl;
@@ -170,7 +174,7 @@ int main() {
         cout<<"Search for a car by its owner's name(N): "<<endl;
         cout<<"Display all cars sorted by Year of Manufacture(Y): "<<endl;
         cout<<"Exit (X): "<<endl;
-        cout<<"Enter Your Choice (I, O, R, N, Y, X) in uppercase: ";
+        cout<<BLUE<<"Enter Your Choice (I, O, R, N, Y, X) in uppercase: "<<RESET;
         cin>>choice;
 
         switch (choice) {
