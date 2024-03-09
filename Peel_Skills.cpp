@@ -4,77 +4,119 @@ using namespace std;
 #define RESET "\033[0m"
 #define CYAN "\033[36m"
 #define BLUE "\033[34m"
+#define RED  "\033[31m"
+#define MAGENTA "\033[35m"
 
-class PEEL {
+class PEEL{
 private:
-    int id, purchase_date, model_year, age;
+    int id, purchase_date, model_year, age, tint;
     double commission;
     string type, exterior_color, interior_color, last_name, postal_code;
     bool sunroof;
     fstream obj;
-    ifstream obj2;
     map<string, int> car_by_name;
     map<int, int> car_by_id;
     vector<pair<int, int>> car_by_year;
     vector<string> car_types;
+    const string questions[12] = {
+    "Enter Car ID: ",
+    "Enter Date of Purchase: ",
+    "Enter Type of Vehicle (lowercase): ",
+    "Enter Car Model Year: ",
+    "Enter Exterior Color of Car: ",
+    "Enter Interior Color of Car: ",
+    "Does it have a sunroof? (yes or no): ",
+    "What is the tint level? (Integer Only): ",
+    "Enter the Owners Last Name: ",
+    "Enter the Owners Age (lowercase): ",
+    "Enter the Owners Postal Code: ",
+    "Enter the Commission Cost: $"
+    };
  
 public:
     PEEL() {
-        obj.open("details.flat", ios::in | ios::app);
-        obj2.open("details.flat");
+        obj.open("details.flat", ios::in | ios::out);
     }
 
     void input(int x) {
         obj.seekg(0, ios_base::end);
         obj.seekp(0, ios_base::end);
-        cout<<"Car "<<x<<endl;
-        cout<<"Enter Car ID: ";
-        cin>>id;
+        cout<<MAGENTA<<"Car "<<x<<RESET<<endl;
+
+        for(int i = 0; i<12; i++){
+            cout<<questions[i];
+            if(i == 0){
+                cin>>id;
+                car_by_id.insert({id, x});
+            }
+            if(i == 1){
+                cin>>purchase_date;
+            }
+            if(i == 2){
+                cin>>type;
+                if(type != "sedan"  && type != "suv"  && type != "van"){
+                    cout<<RED<<"Invalid Car Type, Try Again"<<RESET<<endl;
+                    i--;
+                }   
+            }
+            if(i == 3){
+                cin>>model_year;
+                car_by_year.push_back(make_pair(model_year, x));
+            }
+            if(i == 4){
+                cin>>exterior_color;
+            }
+            if(i == 5){
+                cin>>interior_color;
+            }
+            if(i == 6){
+                string sunroof_str;
+                cin>>sunroof_str;
+                sunroof = (sunroof_str == "yes");
+            }
+            if(i == 7){
+                cin>>tint;
+                if(tint < 0 || tint > 30){
+                    cout<<RED<<"Invalid Tint Level, Try Again"<<RESET<<endl;
+                    i--;
+                }
+            }
+            if(i == 8){
+                cin>>last_name;
+                car_by_name.insert({last_name, x});
+            }
+            if(i == 9){
+                cin>>age;
+            }
+            if(i == 10){
+                cin>>postal_code;
+            }
+            if(i == 11){
+                cin>>commission;
+            }
+        }
         obj<<id<<endl;
-        car_by_id.insert({x, id});
-        cout<<"Enter data of purchase: ";
-        cin>>purchase_date;
         obj<<purchase_date<<endl;
-        cout<<"Enter Type of Vehicle: ";
-        cin>>type;
         obj<<type<<endl;
-        cout<<"Enter Car Model Year: ";
-        cin>>model_year;
         obj<<model_year<<endl;
-        car_by_year.push_back(make_pair(x, model_year));
-        cout<<"Enter Exterior Color of Car: ";
-        cin>>exterior_color;
         obj<<exterior_color<<endl;
-        cout<<"Enter Interior Color of Car: ";
-        cin>>interior_color;
         obj<<interior_color<<endl;
-        cout<<"Does it have a sunroof? (yes or no): ";
-        string sunroof_str;
-        cin>>sunroof_str;
-        sunroof = (sunroof_str == "yes");
         obj<<(sunroof ? "yes" : "no")<<endl;
-        cout<<"Enter the Owners Last Name: ";
-        cin>>last_name;
+        obj<<tint<<endl;
         obj<<last_name<<endl;
-        car_by_name.insert({last_name, x});
-        cout<<"Enter the Owners Age: ";
-        cin>>age;
         obj<<age<<endl;
-        cout<<"Enter the Owners Postal Code: ";
-        cin>>postal_code;
         obj<<postal_code<<endl;
-        cout<<"Enter the Commission Cost: ";
-        cin>>commission;
         obj<<commission<<endl;
     }
 
     void output(int x) {
-        cout<<"Car "<<x<<endl;
+        cout<<MAGENTA<<"Car "<<x<<RESET<<endl;
         obj.clear();
         obj.seekg(0, ios::beg);
         string temp;
+        
         for(int i = 0; i<x-1; i++){
-            for(int j = 0; j<11; j++){
+            for(int j = 0; j<12; j++){
                 getline(obj,temp);
             }
         }
@@ -107,6 +149,10 @@ public:
         cout<<"Does it have a sunroof?: "<<(sunroof ? "Yes" : "No")<<endl;
 
         obj>>line;
+        tint = stoi(line);
+        cout<<"Tint Level: "<<tint<<"%"<<endl;
+
+        obj>>line;
         last_name = line;
         cout<<"Owner's Last Name: "<<last_name<<endl;
 
@@ -123,27 +169,14 @@ public:
 }
 
     void remove_by_id() {
-        int id;
+        int remove_id;
         cout<<"Enter the Car id you want to remove: ";
-        cin>>id;
-        obj.clear();
-        obj.seekg(0, ios::beg);
-        ofstream obj1("temp.txt");
+        cin>>remove_id;
+
         string line;
-        while (getline(obj, line)) {
-            int carId;
-            obj1<<line<<endl;
-            obj>>carId;
-            if (carId == id) {
-                for (int i = 0; i < 10; ++i) {
-                    getline(obj, line);
-                }
-            }
-        }
-        obj.close();
-        obj1.close();
-        remove("details.flat");
-        rename("temp.txt", "details.flat");
+
+        obj.seekg((car_by_id[id] - 1) * sizeof(string) * 12, ios::beg);
+        obj<<endl;
     }
 
     void search_by_name() {
@@ -156,7 +189,7 @@ public:
     void display_by_year(){
         sort(car_by_year.begin(), car_by_year.end());
         for(auto &i : car_by_year){
-            output(i.first);
+            output(i.second);
         }
     }
 };
@@ -168,12 +201,12 @@ int main() {
     while (true) {
         cout<<CYAN<<"\nWelcome to the Peel Car Dealership!"<<RESET<<endl;
         cout<<"Your Choices are: "<<endl;
-        cout<<"Add Vehicles to the File(I): "<<endl;
-        cout<<"Output Every Vehicle in the File(O): "<<endl;
-        cout<<"Remove a Vehicle by its ID(R): "<<endl;
-        cout<<"Search for a car by its owner's name(N): "<<endl;
-        cout<<"Display all cars sorted by Year of Manufacture(Y): "<<endl;
-        cout<<"Exit (X): "<<endl;
+        cout<<"Add Vehicles to the File"<<BLUE<<" (I): "<<RESET<<endl;
+        cout<<"Output A Specfic vehicle in the File"<<BLUE<<" (O): "<<RESET<<endl;
+        cout<<"Remove a Vehicle by its ID"<<BLUE<<" (R): "<<RESET<<endl;
+        cout<<"Search for a car by its owner's name"<<BLUE<<" (N): "<<RESET<<endl;
+        cout<<"Display all cars sorted by Year of Manufacture"<<BLUE<<" (Y): "<<RESET<<endl;
+        cout<<"Exit "<<BLUE<<"(X): "<<RESET<<endl;
         cout<<BLUE<<"Enter Your Choice (I, O, R, N, Y, X) in uppercase: "<<RESET;
         cin>>choice;
 
@@ -200,6 +233,7 @@ int main() {
                 peel.display_by_year();
                 break;
             case 'X':
+                peel.obj.close();
                 return 0;
             default:
                 cout<<"Invalid Choice, Try Again"<<endl;
