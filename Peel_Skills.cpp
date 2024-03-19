@@ -13,7 +13,7 @@ private:
     double commission;
     string type, exterior_color, interior_color, last_name, postal_code;
     bool sunroof;
-    fstream obj;
+    fstream obj;    
     map<string, int> car_by_name;
     map<int, int> car_by_id;
     vector<pair<int, int>> car_by_year;
@@ -27,8 +27,8 @@ private:
     "Enter Interior Color of Car: ",
     "Does it have a sunroof? (yes or no): ",
     "What is the tint level? (Integer Only): ",
-    "Enter the Owners Last Name: ",
-    "Enter the Owners Age (lowercase): ",
+    "Enter the Owners Last Name (lowercase): ",
+    "Enter the Owners Age: ",
     "Enter the Owners Postal Code: ",
     "Enter the Commission Cost: $"
     };
@@ -111,7 +111,7 @@ public:
 
     void output(int x) {
         cout<<MAGENTA<<"Car "<<x<<RESET<<endl;
-        obj.clear();
+
         obj.seekg(0, ios::beg);
         string temp;
         
@@ -168,16 +168,27 @@ public:
         cout<<"Commission: "<<commission<<endl;
 }
 
-    void remove_by_id() {
+    //Does not work, very sad :(
+    /*void remove_by_id() {
         int remove_id;
         cout<<"Enter the Car id you want to remove: ";
         cin>>remove_id;
 
-        string line;
-
-        obj.seekg((car_by_id[id] - 1) * sizeof(string) * 12, ios::beg);
-        obj<<endl;
-    }
+        obj.seekg(0, ios::beg);
+        
+        int x = car_by_id[remove_id];
+        string temp;
+        
+        for(int i = 0; i<x-1; i++){
+            for(int j = 0; j<12; j++){
+                getline(obj,temp);
+            }
+        }
+        
+        for(int j = 0; j<12; j++){
+            obj<<" "<<endl;
+        }
+    }*/
 
     void search_by_name() {
         string name;
@@ -203,11 +214,11 @@ int main() {
         cout<<"Your Choices are: "<<endl;
         cout<<"Add Vehicles to the File"<<BLUE<<" (I): "<<RESET<<endl;
         cout<<"Output A Specfic vehicle in the File"<<BLUE<<" (O): "<<RESET<<endl;
-        cout<<"Remove a Vehicle by its ID"<<BLUE<<" (R): "<<RESET<<endl;
+        //cout<<"Remove a Vehicle by its ID"<<BLUE<<" (R): "<<RESET<<endl;
         cout<<"Search for a car by its owner's name"<<BLUE<<" (N): "<<RESET<<endl;
         cout<<"Display all cars sorted by Year of Manufacture"<<BLUE<<" (Y): "<<RESET<<endl;
         cout<<"Exit "<<BLUE<<"(X): "<<RESET<<endl;
-        cout<<BLUE<<"Enter Your Choice (I, O, R, N, Y, X) in uppercase: "<<RESET;
+        cout<<BLUE<<"Enter Your Choice (I, O, N, Y, X) in uppercase: "<<RESET;
         cin>>choice;
 
         switch (choice) {
@@ -223,9 +234,9 @@ int main() {
                 cin>>m;
                 peel.output(m);
                 break;
-            case 'R':
+            /*case 'R':
                 peel.remove_by_id();
-                break;
+                break;*/
             case 'N':
                 peel.search_by_name();
                 break;
@@ -233,7 +244,6 @@ int main() {
                 peel.display_by_year();
                 break;
             case 'X':
-                peel.obj.close();
                 return 0;
             default:
                 cout<<"Invalid Choice, Try Again"<<endl;
